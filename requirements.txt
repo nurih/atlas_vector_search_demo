@@ -1,0 +1,5 @@
+pymongo
+gpt4all
+pandas
+typer
+rich
