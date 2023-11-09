@@ -1,5 +1,6 @@
 
-from config import INDEX_NAME, VECTOR_FIELD
+from pymongo import MongoClient
+from config import COLLECTION, DB, INDEX_NAME, VECTOR_FIELD
 
 
 def create_query(embedder, prompt, index_name=INDEX_NAME, vector_field=VECTOR_FIELD):
@@ -28,3 +29,8 @@ def create_query(embedder, prompt, index_name=INDEX_NAME, vector_field=VECTOR_FI
         },
     ]
     return pipeline
+  
+def run_query(query, connection_url, db_name = DB, collection_name= COLLECTION):
+    collection =  MongoClient(connection_url).get_database(db_name).get_collection(collection_name)
+    
+    return [doc for doc in collection.aggregate(pipeline=query)]

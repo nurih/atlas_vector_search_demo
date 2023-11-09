@@ -3,8 +3,7 @@
 import rich
 from config import (
     INPUT_FILE,
-    PLOT_FIELD_FULL,
-    PLOT_FIELD_SHORT,
+    PLOT_FIELD,
     VECTOR_FIELD,
     MAX_VECTOR_LENGTH,
 )
@@ -51,7 +50,7 @@ def add_embeddings(original_docs, plot_field, vector_field_name):
 # %%
 def main():
     source_file = typer.prompt("Original documents file?", INPUT_FILE)
-    plot_field = typer.prompt("Original document text field", PLOT_FIELD_FULL)
+    plot_field = typer.prompt("Original document text field", PLOT_FIELD)
     vector_field_name = typer.prompt("Field storing embedding vector", VECTOR_FIELD)
 
     target_file = source_file.replace(".json", ".gpt4all.json")

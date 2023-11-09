@@ -1,12 +1,11 @@
-COLLECTION = "mflix_ai"
+COLLECTION = "cmu_movies"
 DB = "demo"
 VECTOR_FIELD = "plot_vector"
 
 INDEX_NAME = "myAiEmbeddingIndex"
               
 INPUT_FILE = "./sample_mflix/sample_mflix.movies.json"
-PLOT_FIELD_FULL = "fullplot"
-PLOT_FIELD_SHORT = "plot"
+PLOT_FIELD = "fullplot"
 
 MAX_VECTOR_LENGTH = 2048
 
