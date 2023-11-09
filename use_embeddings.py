@@ -8,6 +8,7 @@ from gpt4all import Embed4All
 from pymongo import MongoClient
 import typer
 from rich import print_json
+from atlas_vector_search import create_query
 
 embedder = Embed4All()  # default model is 'all-MiniLM-L6-v2-f16.gguf'
 
@@ -29,39 +30,11 @@ def test_embedding():
 
 # %%
 
-
-def create_query(text):
-    vector = embedder.embed(text)
-
-    pipeline = [
-        {
-            "$vectorSearch": {
-                "index": INDEX_NAME,
-                "path": VECTOR_FIELD,
-                "queryVector": vector,
-                "numCandidates": 256,
-                "limit": 9
-                # "filter": {<filter-specification>}
-            }
-        },
-        {
-            "$project": {
-                "score": {"$meta": "vectorSearchScore"},
-                "title": 1,
-                "year": 1,
-                "fullplot": 1,
-                "_id": 0,
-            }
-        },
-    ]
-    return pipeline
-
-
-def run_query(query):
+def run_query(query, collection):
     collection = (
         MongoClient(os.environ.get(CONNECTION_ENV_VARIABLE))
         .get_database(DB)
-        .get_collection(COLLECTION)
+        .get_collection(collection)
     )
 
     for doc in collection.aggregate(pipeline=query):
@@ -69,16 +42,17 @@ def run_query(query):
 
 
 def main():
-    query_text = typer.prompt("What's the movie about?")
-    typer.echo(f"K. Looking for a movie withe the concept: '{query_text}' ...")
-    query = create_query(query_text)
+    prompt = typer.prompt("What's the movie about?")
+    collection_name= typer.prompt("Collection name?", COLLECTION)
+    typer.echo(f"K. Looking for a movie withe the concept: '{prompt}' ...")
+    query = create_query(embedder=embedder,prompt=prompt)
 
     print_json(data=query)
 
     if typer.confirm("Run the query?"):
         typer.echo(f"Using {CONNECTION_ENV_VARIABLE} to connect...")
         try:
-            run_query(query)
+            run_query(query, collection=collection_name)
         except ServerSelectionTimeoutError:
             typer.confirm("Can't connect... Try Again?")
 
